@@ -18,9 +18,17 @@ func main() {
 	// setting the env for better distinction between the namespaces
 	cmd.Env = []string{"PS1=-[xontainer]- # "}
 
-	// new uts namespace which gives us a namespaced hostname and domain name to the process
+	/*
+		FOR GENERAL INFORMATION: https://man7.org/linux/man-pages/man7/namespaces.7.html
+
+				syscall.CLONE_NEWUTS - new uts namespace which gives us a namespaced hostname and domain name to the process
+				syscall.CLONE_NEWPID - new process id for this process in the namespace it will be 1
+				syscall.CLONE_NEWIPC - https://www.man7.org/linux/man-pages/man7/ipc_namespaces.7.html
+				syscall.CLONE_NEWNET - https://man7.org/linux/man-pages/man7/network_namespaces.7.html
+				syscall.CLONE_NEWUSER - https://man7.org/linux/man-pages/man7/user_namespaces.7.html
+	*/
 	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Cloneflags: syscall.CLONE_NEWUTS,
+		Cloneflags: syscall.CLONE_NEWUTS | syscall.CLONE_NEWPID | syscall.CLONE_NEWIPC | syscall.CLONE_NEWNET | syscall.CLONE_NEWUSER,
 	}
 
 	// running the command

@@ -22,7 +22,12 @@ func init() {
 
 func nsInitialisation() {
 	fmt.Printf("\n>> ANYTHING THAT WE WANT TO DO INSIDE THE NAMESPACE <<\n")
-	// this runs the command in the new namespace
+	//
+	// set hostname
+	if err := syscall.Sethostname([]byte("xontainer")); err != nil {
+		log.Fatalf("Error while changing the hostname inside the container: %v", err)
+	}
+
 	nsRun()
 }
 
@@ -34,7 +39,8 @@ func nsRun() {
 	cmd.Stderr = os.Stderr
 
 	// setting the env for better distinction between the namespaces
-	cmd.Env = []string{"PS1=-[xontainer]- # "}
+	// setting `TERM=xterm` to use clear command in the container
+	cmd.Env = []string{"PS1=-[xontainer]- # ", "TERM=xterm"}
 
 	// running the command
 	if err := cmd.Run(); err != nil {

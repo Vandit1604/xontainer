@@ -22,7 +22,19 @@ func init() {
 
 func nsInitialisation() {
 	fmt.Printf("\n>> ANYTHING THAT WE WANT TO DO INSIDE THE NAMESPACE <<\n")
-	//
+	fmt.Println(os.Args[1])
+	newRootPath := os.Args[1]
+	fmt.Println(newRootPath)
+
+	if err := mountProc(newRootPath); err != nil {
+		fmt.Printf("Error mounting /proc - %s\n", err)
+		os.Exit(1)
+	}
+	if err := pivotRoot(newRootPath); err != nil {
+		fmt.Printf("Error running pivot_root - %s\n", err)
+		os.Exit(1)
+	}
+
 	// set hostname
 	if err := syscall.Sethostname([]byte("xontainer")); err != nil {
 		log.Fatalf("Error while changing the hostname inside the container: %v", err)
@@ -50,7 +62,10 @@ func nsRun() {
 }
 
 func main() {
-	cmd := reexec.Command("nsInitialisation")
+	var rootFsPath string
+
+	//  We’re now passing an argument, rootfsPath, to nsInitialisation.
+	cmd := reexec.Command("nsInitialisation", rootFsPath)
 
 	// pipe the stdin/out/err of os to cmd
 	cmd.Stdin = os.Stdin

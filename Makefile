@@ -1,5 +1,5 @@
 build:
-	@go build -o xontainer main.go
+	@go build -o xontainer main.go rootfs.go
 
 run: build
 	@./xontainer

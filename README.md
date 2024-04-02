@@ -16,7 +16,7 @@ TL;DR:
 From now on, xontainer will expect a root filesystem to exist at `/tmp/xontainer/rootfs` and will raise an error if one can’t be found. Note that although we’re using BusyBox for this particular example, you could just as easily use any other distro.
 
 ```bash
-$ mkdir -p /tmp/xontainer/rootfs
-$ tar -C /tmp/xontainer/rootfs -xf assets/alpine-minirootfs-3.19.1-x86_64.tar.gz
+mkdir -p /tmp/xontainer/rootfs
+tar -C /tmp/xontainer/rootfs -xf assets/alpine-minirootfs-3.19.1-x86_64.tar.gz
 ```
 

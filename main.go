@@ -20,6 +20,7 @@ func init() {
 	}
 }
 
+// does all the Initialisation of the namespace
 func nsInitialisation() {
 	fmt.Printf("\n>> ANYTHING THAT WE WANT TO DO INSIDE THE NAMESPACE <<\n")
 	newRootPath := os.Args[1]
@@ -41,6 +42,7 @@ func nsInitialisation() {
 	nsRun()
 }
 
+// It runs the shell inside the namespace after the initialisation
 func nsRun() {
 	cmd := exec.Command("/bin/sh")
 

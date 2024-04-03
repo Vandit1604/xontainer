@@ -7,6 +7,11 @@ import (
 	"syscall"
 )
 
+// i understood this via this line
+//
+//	EINVAL put_old is not at or underneath new_root.
+//
+// ref: https://man7.org/linux/man-pages/man2/pivot_root.2.html
 func pivotRoot(newRoot string) error {
 	// .pivot_root is a hidden directory in the new root
 	putOld := filepath.Join(newRoot, "/.pivot_root")
@@ -46,6 +51,7 @@ func pivotRoot(newRoot string) error {
 	return nil
 }
 
+// we are adding our own /proc since the processes are referenced from proc
 func mountProc(newroot string) error {
 	source := "proc"
 	target := filepath.Join(newroot, "/proc")

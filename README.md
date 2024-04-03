@@ -20,3 +20,13 @@ mkdir -p /tmp/xontainer/rootfs
 tar -C /tmp/xontainer/rootfs -xf assets/alpine-minirootfs-3.19.1-x86_64.tar.gz
 ```
 
+## Features of Xontainer
+
+* Can be run as a non-root user thanks to the User namespace
+* Can choose a root filesystem to run in thanks to the Mount namespace
+* Cannot see any of the host’s processes thanks to the PID namespace
+
+## Limitations of Xontainer
+
+* Network connectivity is missing as of now. I have to learn more about network namespace.
+

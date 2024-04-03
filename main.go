@@ -22,9 +22,7 @@ func init() {
 
 func nsInitialisation() {
 	fmt.Printf("\n>> ANYTHING THAT WE WANT TO DO INSIDE THE NAMESPACE <<\n")
-	fmt.Println(os.Args[1])
 	newRootPath := os.Args[1]
-	fmt.Println(newRootPath)
 
 	if err := mountProc(newRootPath); err != nil {
 		fmt.Printf("Error mounting /proc - %s\n", err)
@@ -62,10 +60,11 @@ func nsRun() {
 }
 
 func main() {
-	var rootFsPath string
+
+	rootfsPath := "/tmp/xontainer/rootfs/"
 
 	//  We’re now passing an argument, rootfsPath, to nsInitialisation.
-	cmd := reexec.Command("nsInitialisation", rootFsPath)
+	cmd := reexec.Command("nsInitialisation", rootfsPath)
 
 	// pipe the stdin/out/err of os to cmd
 	cmd.Stdin = os.Stdin

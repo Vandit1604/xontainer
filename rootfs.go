@@ -24,13 +24,6 @@ func pivotRoot(newRoot string) error {
 		log.Fatalf("Could not pivot root: %v", err)
 	}
 
-	if err := syscall.Chdir("/"); err != nil {
-		log.Fatalf("Could not chdir to /: %v", err)
-	}
-	if err := syscall.PivotRoot(newRoot, putOld); err != nil {
-		log.Fatalf("Could not pivot root: %v", err)
-	}
-
 	// ensure current working directory is set to new root
 	if err := os.Chdir("/"); err != nil {
 		log.Fatalf("Couldn't change directory to /: %v", err)

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -10,10 +9,10 @@ import (
 	"github.com/docker/docker/pkg/reexec"
 )
 
-// init is called before main function. This automatically registers the commands inside the nsInitialisation
+// init is called before main function. This automatically registers the commands inside the initialisation
 func init() {
 	// via `Register` we can register the functions that we will use inside the namespace that we are creating for a container
-	reexec.Register("nsInitialisation", nsInitialisation)
+	reexec.Register("initialisation", initialisation)
 	// via Init we check if the registered function was actually exec'd or not
 	if reexec.Init() {
 		os.Exit(0)
@@ -21,16 +20,23 @@ func init() {
 }
 
 // does all the Initialisation of the namespace
-func nsInitialisation() {
-	fmt.Printf("\n>> ANYTHING THAT WE WANT TO DO INSIDE THE NAMESPACE <<\n")
+func initialisation() {
+	log.Printf("\n>> ANYTHING THAT WE WANT TO DO INSIDE THE NAMESPACE <<\n")
 	newRootPath := os.Args[1]
+	memoryLimit := os.Args[2]
+	cpuLimit := os.Args[3]
 
-	if err := mountProc(newRootPath); err != nil {
-		fmt.Printf("Error mounting /proc - %s\n", err)
+	if err := limitCPUandMemory(newRootPath, memoryLimit, cpuLimit); err != nil {
+		log.Printf("Error Limiting Cpu and Memory - %s\n", err)
 		os.Exit(1)
 	}
+	if err := mountProc(newRootPath); err != nil {
+		log.Printf("Error mounting /proc - %s\n", err)
+		os.Exit(1)
+	}
+
 	if err := pivotRoot(newRootPath); err != nil {
-		fmt.Printf("Error running pivot_root - %s\n", err)
+		log.Printf("Error running pivot_root - %s\n", err)
 		os.Exit(1)
 	}
 
@@ -56,17 +62,19 @@ func nsRun() {
 
 	// running the command
 	if err := cmd.Run(); err != nil {
-		log.Fatalf("Error while running the command %v:", err)
+		log.Fatalf(`Error running the command: %v
+			- Did you extract the assets/alpine-minirootfs-3.19.1-x86_64.tar.gz`, err)
 		os.Exit(cmd.ProcessState.ExitCode())
 	}
 }
 
 func main() {
+	rootfsPath := "/tmp/xontainer/rootfs"
+	memorylimit := "524288000"
+	cpulimit := "512"
 
-	rootfsPath := "/tmp/xontainer/rootfs/"
-
-	//  We’re now passing an argument, rootfsPath, to nsInitialisation.
-	cmd := reexec.Command("nsInitialisation", rootfsPath)
+	//  We’re now passing an argument, rootfsPath, to initialisation.
+	cmd := reexec.Command("initialisation", rootfsPath, memorylimit, cpulimit)
 
 	// pipe the stdin/out/err of os to cmd
 	cmd.Stdin = os.Stdin
@@ -124,7 +132,8 @@ func main() {
 
 	// waiting for the command
 	if err := cmd.Wait(); err != nil {
-		log.Fatalf("Error while waiting for the command %v:", err)
+		log.Fatalf(`Error running the command: %v
+			- Did you extract the assets/alpine-minirootfs-3.19.1-x86_64.tar.gz`, err)
 		os.Exit(cmd.ProcessState.ExitCode())
 	}
 }
